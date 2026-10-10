@@ -1,0 +1,320 @@
+:root {
+    --ink: #17273a;
+    --muted: #496474;
+    --border: #bce5e8;
+    --accent: #d59225;
+    --accent-dark: #a96714;
+    --showcase: #267e90;
+    --danger: #ef5b68;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body.login-screen {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: "Inter", "Segoe UI", Tahoma, Arial, sans-serif;
+    background: #fff;
+}
+
+.login-shell {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.05fr) minmax(400px, 0.95fr);
+    min-height: 100vh;
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 50px;
+    margin-bottom: 1.5rem;
+    color: var(--showcase);
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+}
+
+.login-brand::before {
+    width: 28px;
+    height: 3px;
+    margin-right: 0.6rem;
+    border-radius: 999px;
+    background: var(--accent);
+    content: "";
+}
+
+.bee-logo {
+    width: 52px;
+    height: 58px;
+    flex: 0 0 52px;
+    background-image: url("../images/honey-bee-logo.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.login-showcase {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: clamp(2rem, 5vw, 4rem);
+    overflow: hidden;
+    color: #fff;
+    background:
+        radial-gradient(circle at 78% 18%, rgba(236, 250, 250, 0.55), transparent 23rem),
+        linear-gradient(145deg, #267e90 0%, var(--showcase) 58%, #5bb9c6 100%);
+}
+
+.showcase-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 34rem;
+    margin: auto 0 2rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.75rem;
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+}
+
+.showcase-copy .eyebrow {
+    color: #fff1be;
+}
+
+.showcase-copy h1 {
+    max-width: 31rem;
+    margin: 0;
+    font-size: clamp(2rem, 3.8vw, 3.65rem);
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+}
+
+.showcase-copy > p:last-child {
+    max-width: 29rem;
+    margin: 1.2rem 0 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.showcase-visual {
+    position: relative;
+    height: min(34vw, 380px);
+    min-height: 275px;
+    margin: auto 0 0;
+    transform: translateY(-50px);
+}
+
+.bee-halo {
+    position: absolute;
+    width: min(26vw, 290px);
+    aspect-ratio: 1;
+    left: 50%;
+    top: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.46);
+    border-radius: 50%;
+    background: rgba(205, 245, 245, 0.19);
+    box-shadow: 0 0 0 26px rgba(205, 245, 245, 0.08);
+    transform: translate(-50%, -50%);
+}
+
+.bee-hero {
+    position: absolute;
+    width: min(25vw, 275px);
+    aspect-ratio: 1;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    background-image: url("../images/honey-bee-logo.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    filter: drop-shadow(0 18px 16px rgba(16, 75, 86, 0.25));
+    transform: translate(-50%, -50%);
+}
+
+.bee-orbit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 1px solid rgba(255, 235, 171, 0.56);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-16deg);
+}
+
+.orbit-one {
+    width: min(38vw, 415px);
+    height: min(16vw, 175px);
+}
+
+.orbit-two {
+    width: min(31vw, 335px);
+    height: min(28vw, 305px);
+    border-color: rgba(222, 249, 250, 0.33);
+    transform: translate(-50%, -50%) rotate(40deg);
+}
+
+.honeycomb {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.honeycomb i {
+    position: absolute;
+    width: 48px;
+    aspect-ratio: 1.15;
+    border: 1px solid rgba(255, 239, 180, 0.32);
+    background: rgba(255, 218, 116, 0.11);
+    clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0 50%);
+}
+
+.honeycomb i:nth-child(1) { left: 5%; top: 15%; }
+.honeycomb i:nth-child(2) { left: 14%; top: 32%; }
+.honeycomb i:nth-child(3) { left: 5%; top: 49%; }
+.honeycomb i:nth-child(4) { right: 8%; top: 8%; }
+.honeycomb i:nth-child(5) { right: 17%; top: 25%; }
+.honeycomb i:nth-child(6) { right: 8%; top: 42%; }
+.honeycomb i:nth-child(7) { right: 17%; top: 59%; }
+
+.login-panel {
+    display: grid;
+    place-items: center;
+    place-content: center;
+    padding: clamp(2rem, 5vw, 5rem);
+    background:
+        radial-gradient(circle at 92% 7%, rgba(188, 237, 239, 0.42), transparent 16rem),
+        #fff;
+}
+
+.login-form-wrap {
+    width: min(100%, 390px);
+    padding: 0.35rem 0;
+    transform: translateY(-100px);
+}
+
+.login-heading {
+    margin-bottom: 2.25rem;
+}
+
+.login-heading h2 {
+    margin: 0 0 0.65rem;
+    font-size: clamp(1.7rem, 3vw, 2.15rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.login-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.93rem;
+    line-height: 1.55;
+}
+
+.login-form label {
+    display: block;
+    margin: 1.1rem 0 0.48rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.login-form input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.82rem 0.9rem;
+    background: #f5fcfc;
+    color: var(--ink);
+    font: inherit;
+    transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.login-form input:focus {
+    outline: 2px solid rgba(38, 126, 144, 0.25);
+    outline-offset: 1px;
+    border-color: var(--accent);
+    background: #fff;
+}
+
+.login-form button {
+    width: 100%;
+    margin-top: 1.75rem;
+    border: 0;
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    color: #fff;
+    background: var(--accent);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 150ms ease, transform 150ms ease;
+}
+
+.login-form button span {
+    margin-left: 0.4rem;
+    font-size: 1.1rem;
+}
+
+.login-form button:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+}
+
+.login-error {
+    margin: 0 0 1rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 8px;
+    color: var(--danger);
+    background: #fff0ef;
+    font-size: 0.88rem;
+}
+
+.login-help {
+    margin: 1.5rem 0 0;
+    color: var(--muted);
+    text-align: center;
+    font-size: 0.82rem;
+}
+
+.login-help a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+@media (max-width: 800px) {
+    .login-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .login-showcase {
+        display: none;
+    }
+
+    .login-panel {
+        min-height: 100vh;
+    }
+
+    .login-brand {
+        margin: 0 auto 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-panel {
+        padding: 1.5rem;
+    }
+
+    .login-brand {
+        margin-bottom: 1.5rem;
+    }
+}
