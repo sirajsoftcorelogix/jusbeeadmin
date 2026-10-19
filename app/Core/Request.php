@@ -100,6 +100,13 @@ class Request
         return array_merge($this->query, $this->body);
     }
 
+    public function file(string $key): ?array
+    {
+        $file = $this->files[$key] ?? null;
+
+        return is_array($file) && is_string($file['tmp_name'] ?? null) ? $file : null;
+    }
+
     public function header(string $name, mixed $default = null): mixed
     {
         $normalized = 'HTTP_' . strtoupper(str_replace('-', '_', $name));

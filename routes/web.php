@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AuthMiddleware;
@@ -25,5 +26,9 @@ $router->post('/content', [ContentController::class, 'store'])->middleware([Auth
 $router->post('/content/{id}/update', [ContentController::class, 'update'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
 $router->post('/content/{id}/status', [ContentController::class, 'setStatus'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
 $router->post('/content/{id}/delete', [ContentController::class, 'destroy'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
+$router->get('/library', [LibraryController::class, 'index'])->middleware([AuthMiddleware::class, AdminMiddleware::class]);
+$router->post('/library', [LibraryController::class, 'store'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
+$router->post('/library/{id}/update', [LibraryController::class, 'update'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
+$router->post('/library/{id}/delete', [LibraryController::class, 'destroy'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
 $router->get('/pages/{slug}', [ContentController::class, 'show']);
 $router->get('/ping', [HomeController::class, 'ping']);

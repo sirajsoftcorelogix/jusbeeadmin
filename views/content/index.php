@@ -19,21 +19,7 @@ $formStatus = (string) ($formValues['status'] ?? 'draft');
 <body class="dashboard-screen">
     <div class="dashboard-layout">
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <span class="bee-logo" aria-hidden="true"></span>
-                <span><?= htmlspecialchars($appName, ENT_QUOTES, 'UTF-8') ?></span>
-            </div>
-            <ul class="sidebar-nav">
-                <li><a href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') ?>/" class="sidebar-link"><span class="nav-icon">📊</span> Dashboard</a></li>
-                <li><a href="<?= htmlspecialchars($baseUrl, ENT_QUOTES, 'UTF-8') ?>/users" class="sidebar-link"><span class="nav-icon">👥</span> Users</a></li>
-                <li><a href="<?= htmlspecialchars($contentUrl, ENT_QUOTES, 'UTF-8') ?>" class="sidebar-link is-active" aria-current="page"><span class="nav-icon">📄</span> Content</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">📝</span> Check-ins</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">🔔</span> Notifications</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">📈</span> Reports</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">⚙️</span> Settings</a></li>
-            </ul>
-        </aside>
+        <?php $activeNav = 'content'; require dirname(__DIR__) . '/partials/sidebar.php'; ?>
 
         <div class="dashboard-main">
             <header class="topbar">

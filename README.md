@@ -49,6 +49,12 @@ A basic but modern MVC framework starter for PHP 8.2+, designed for XAMPP and fo
 - `POST /content/{id}/status` - publish or unpublish a content page
 - `POST /content/{id}/delete` - delete a content page
 - `GET /pages/{slug}` - view a published page
+- `GET /library` - admin-only library management
+- `POST /library` - create a library item
+- `POST /library/{id}/update` - update a library item
+- `POST /library/{id}/delete` - delete a library item
+
+Library items are stored in `ju_library` (slug, youtube, audio, video, link, image, status, created_at, modified_at); initialize the table with `database/ju_library.sql`. Media fields `youtube` and `link` are http(s) URLs; `audio`, `video` and `image` (jpg, png, gif, webp) are file uploads (stored under `public/uploads/library/`, max 100 MB and limited by PHP `upload_max_filesize`/`post_max_size`).
 
 User accounts are stored in `ju_users`; initialize the table with `database/ju_users.sql`. Account deactivation is reversible, and the management screen prevents deactivating the signed-in administrator or removing the last active administrator.
 

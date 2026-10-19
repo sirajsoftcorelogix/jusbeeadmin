@@ -10,26 +10,7 @@
     <div class="dashboard-layout">
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <span class="bee-logo" aria-hidden="true"></span>
-                <span><?= htmlspecialchars($appName ?? 'MVC', ENT_QUOTES, 'UTF-8') ?></span>
-            </div>
-
-            <ul class="sidebar-nav">
-                <li><a href="#" class="sidebar-link is-active"><span class="nav-icon">📊</span> Dashboard</a></li>
-                <li><a href="users" class="sidebar-link"><span class="nav-icon">👥</span> Users</a></li>
-                <li><a href="content" class="sidebar-link"><span class="nav-icon">📄</span> Content</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">📝</span> Check-ins</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">🔔</span> Notifications</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">📈</span> Reports</a></li>
-                <li><a href="#" class="sidebar-link"><span class="nav-icon">⚙️</span> Settings</a></li>
-            </ul>
-
-            <div class="sidebar-footer">
-                API health: <code>GET /ping</code>
-            </div>
-        </aside>
+        <?php $activeNav = 'dashboard'; require dirname(__DIR__) . '/partials/sidebar.php'; ?>
 
         <div class="dashboard-main">
             <header class="topbar">
