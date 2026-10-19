@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS ju_content_pages (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(160) NOT NULL,
+    slug VARCHAR(160) NOT NULL UNIQUE,
+    body MEDIUMTEXT NOT NULL,
+    status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+    published_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_ju_content_pages_status_updated (status, updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -21,6 +21,7 @@ class AuthController extends Controller
 
         return $this->view('auth.login', [
             'appName' => (string) config('app.name'),
+            'baseUrl' => rtrim((string) config('app.url'), '/'),
             'csrfField' => $csrf->field(),
         ]);
     }
@@ -43,6 +44,7 @@ class AuthController extends Controller
         ) {
             return $this->view('auth.login', [
                 'appName' => (string) config('app.name'),
+                'baseUrl' => rtrim((string) config('app.url'), '/'),
                 'csrfField' => app(Csrf::class)->field(),
                 'error' => 'The email or password is incorrect.',
                 'email' => $email,

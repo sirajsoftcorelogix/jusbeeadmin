@@ -19,6 +19,7 @@
             <ul class="sidebar-nav">
                 <li><a href="#" class="sidebar-link is-active"><span class="nav-icon">📊</span> Dashboard</a></li>
                 <li><a href="users" class="sidebar-link"><span class="nav-icon">👥</span> Users</a></li>
+                <li><a href="content" class="sidebar-link"><span class="nav-icon">📄</span> Content</a></li>
                 <li><a href="#" class="sidebar-link"><span class="nav-icon">📝</span> Check-ins</a></li>
                 <li><a href="#" class="sidebar-link"><span class="nav-icon">🔔</span> Notifications</a></li>
                 <li><a href="#" class="sidebar-link"><span class="nav-icon">📈</span> Reports</a></li>

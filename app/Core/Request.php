@@ -47,8 +47,23 @@ class Request
         $scriptName = str_replace('\\', '/', (string) ($server['SCRIPT_NAME'] ?? ''));
         $basePath = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
 
-        if ($basePath !== '' && str_starts_with($path, $basePath)) {
-            $path = substr($path, strlen($basePath));
+        $basePaths = $basePath === '' ? [] : [$basePath];
+        if (strtolower(basename($basePath)) === 'public') {
+            $projectPath = rtrim(dirname($basePath), '/');
+            if ($projectPath !== '' && $projectPath !== '.') {
+                $basePaths[] = $projectPath;
+            }
+        }
+
+        usort($basePaths, static fn (string $left, string $right): int => strlen($right) <=> strlen($left));
+        foreach ($basePaths as $candidate) {
+            if (
+                strncasecmp($path, $candidate, strlen($candidate)) === 0
+                && (strlen($path) === strlen($candidate) || $path[strlen($candidate)] === '/')
+            ) {
+                $path = substr($path, strlen($candidate));
+                break;
+            }
         }
 
         return $path !== '' ? (rtrim($path, '/') ?: '/') : '/';
