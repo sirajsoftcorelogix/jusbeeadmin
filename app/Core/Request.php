@@ -6,6 +6,8 @@ namespace App\Core;
 
 class Request
 {
+    private array $attributes = [];
+
     public function __construct(
         private readonly string $method,
         private readonly string $path,
@@ -28,13 +30,39 @@ class Request
             strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET'),
             $path,
             $_GET,
-            $_POST,
+            self::parseBody(),
             $_FILES,
             $_COOKIE,
             $_SERVER
         );
     }
 
+    private static function parseBody(): array
+    {
+        if ($_POST !== []) {
+            return $_POST;
+        }
+
+        $raw = (string) file_get_contents('php://input');
+        if (trim($raw) === '') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        // PHP does not populate $_POST for PUT/PATCH/DELETE form bodies.
+        $type = strtolower((string) ($_SERVER['CONTENT_TYPE'] ?? ''));
+        if (str_contains($type, 'application/x-www-form-urlencoded')) {
+            parse_str($raw, $parsed);
+
+            return $parsed;
+        }
+
+        return [];
+    }
     /**
      * Removes the front controller's base directory (e.g. "/Jusbee_admin/public")
      * from the request path, so routing works whether the app runs at the web
@@ -98,6 +126,16 @@ class Request
     public function all(): array
     {
         return array_merge($this->query, $this->body);
+    }
+
+    public function setAttribute(string $key, mixed $value): void
+    {
+        $this->attributes[$key] = $value;
+    }
+
+    public function attribute(string $key, mixed $default = null): mixed
+    {
+        return $this->attributes[$key] ?? $default;
     }
 
     public function file(string $key): ?array

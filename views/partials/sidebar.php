@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Expects $activeNav (dashboard|users|content|library) and optionally $appName.
+// Expects $activeNav (dashboard|users|content|library|app-users) and optionally $appName.
 $navBase = rtrim((string) config('app.url'), '/');
 $navName = (string) ($appName ?? config('app.name'));
 $navEsc = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -11,6 +11,7 @@ $navItems = [
     'users' => ['/users', '👥', 'Users'],
     'content' => ['/content', '📄', 'Content'],
     'library' => ['/library', '📚', 'Library'],
+    'app-users' => ['/app-users', '📱', 'App Users'],
 ];
 $navPlaceholders = [['📝', 'Check-ins'], ['🔔', 'Notifications'], ['📈', 'Reports'], ['⚙️', 'Settings']];
 ?>

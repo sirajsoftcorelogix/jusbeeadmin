@@ -56,6 +56,24 @@ A basic but modern MVC framework starter for PHP 8.2+, designed for XAMPP and fo
 
 Library items are stored in `ju_library` (slug, youtube, audio, video, link, image, status, created_at, modified_at); initialize the table with `database/ju_library.sql`. Media fields `youtube` and `link` are http(s) URLs; `audio`, `video` and `image` (jpg, png, gif, webp) are file uploads (stored under `public/uploads/library/`, max 100 MB and limited by PHP `upload_max_filesize`/`post_max_size`).
 
-User accounts are stored in `ju_users`; initialize the table with `database/ju_users.sql`. Account deactivation is reversible, and the management screen prevents deactivating the signed-in administrator or removing the last active administrator.
+## App Users (admin)
 
-Content pages are stored in `ju_content_pages`; initialize the table with `database/ju_content_pages.sql`. Page bodies are plain text, escaped on output, and only published pages are publicly viewable.
+Admins manage API-registered users at `/app-users` (sidebar: App Users): list with search/status filter, create, edit (blank password keeps the current one), activate/deactivate and delete. Deactivating a user, changing their password, or deleting them signs them out of the API.
+
+- `GET /app-users` / `POST /app-users` / `POST /app-users/{id}/update` / `/status` / `/delete`  (admin + CSRF)
+
+## Mobile/App User API
+
+App users live in `ju_app_users` (name, email, phone, password hash, status, timestamps) and their login tokens in `ju_app_user_tokens`. Create both with `database/ju_app_users.sql` then `database/ju_app_user_tokens.sql` (if you created `ju_app_users` earlier with an `api_token` column, also run `database/migrate_drop_app_users_api_token.sql`). Send JSON (`Content-Type: application/json`). Responses are JSON with `success`, `message`, and `errors` on failure. No CSRF token is needed.
+
+Public:
+- `POST /api/register` - `name`, `email`, `phone`, `password` (min 8), optional `device_name` -> `201` with `token`, `token_type`, `expires_at`, `user`
+- `POST /api/login` - `login` (email or phone, or `email`), `password`, optional `device_name` -> same response
+
+Protected (header `Authorization: Bearer <token>`; handled by `ApiAuthMiddleware`, returns `401` for a missing, invalid or expired token and `403` for an inactive account):
+- `GET /api/profile` - current user
+- `PUT /api/profile` (or `POST`) - any of `name`, `email`, `phone`; to change the password send `password` plus `current_password` (all other sessions are then signed out)
+- `POST /api/logout` - revoke the current token
+- `POST /api/logout-all` - revoke every token of the user
+
+Every login creates a separate token, so a user can be signed in on several devices. Tokens expire after 30 days (`AppUserToken::TTL_DAYS`); only their SHA-256 hash is stored.
