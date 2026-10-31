@@ -54,7 +54,13 @@ class AppUserAdminController extends Controller
             return $this->renderIndex($csrf, $users, ['error' => $error, 'old' => $input]);
         }
 
-        $id = $users->create($input['name'], $input['email'], $input['phone'], password_hash($input['password'], PASSWORD_DEFAULT));
+        $id = $users->create(
+            $input['first_name'],
+            $input['last_name'],
+            $input['email'],
+            $input['phone'],
+            password_hash($input['password'], PASSWORD_DEFAULT)
+        );
         if ($input['status'] !== 'active') {
             $users->update($id, ['status' => $input['status']]);
         }
@@ -73,7 +79,13 @@ class AppUserAdminController extends Controller
             return $this->renderIndex($csrf, $users, ['editingUser' => $user, 'error' => $error, 'old' => $input]);
         }
 
-        $fields = ['name' => $input['name'], 'email' => $input['email'], 'phone' => $input['phone'], 'status' => $input['status']];
+        $fields = [
+            'first_name' => $input['first_name'],
+            'last_name' => $input['last_name'],
+            'email' => $input['email'],
+            'phone' => $input['phone'],
+            'status' => $input['status'],
+        ];
         if ($input['password'] !== '') {
             $fields['password'] = password_hash($input['password'], PASSWORD_DEFAULT);
         }
@@ -115,13 +127,14 @@ class AppUserAdminController extends Controller
         app(\App\Models\AppUserToken::class)->revokeAllForUser($userId);
     }
 
-    /** @return array{name:string,email:string,phone:string,password:string,status:string} */
+    /** @return array{first_name:string,last_name:string,email:string,phone:string,password:string,status:string} */
     private function input(Request $request): array
     {
         $text = static fn (mixed $value): string => is_string($value) ? trim($value) : '';
 
         return [
-            'name' => $text($request->input('name')),
+            'first_name' => $text($request->input('first_name')),
+            'last_name' => $text($request->input('last_name')),
             'email' => strtolower($text($request->input('email'))),
             'phone' => preg_replace('/[\s\-().]/', '', $text($request->input('phone'))) ?? '',
             'password' => is_string($request->input('password')) ? $request->input('password') : '',
@@ -131,9 +144,12 @@ class AppUserAdminController extends Controller
 
     private function validateInput(array $input, AppUser $users, ?int $excludeId, bool $passwordRequired): ?string
     {
-        $length = mb_strlen($input['name']);
-        if ($length < 2 || $length > 120) {
-            return 'Name must be 2 to 120 characters.';
+        $firstNameLength = mb_strlen($input['first_name']);
+        if ($firstNameLength < 1 || $firstNameLength > 120) {
+            return 'First name must be 1 to 120 characters.';
+        }
+        if (mb_strlen($input['last_name']) > 120) {
+            return 'Last name must be 120 characters or fewer.';
         }
         if (filter_var($input['email'], FILTER_VALIDATE_EMAIL) === false || strlen($input['email']) > 190) {
             return 'Provide a valid email address.';

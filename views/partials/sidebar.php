@@ -2,16 +2,21 @@
 
 declare(strict_types=1);
 
-// Expects $activeNav (dashboard|users|content|library|app-users) and optionally $appName.
+// Expects $activeNav (dashboard|users|content|test-content|content-categories|library|media-categories|app-users|counsellors|riyaz) and optionally $appName.
 $navBase = rtrim((string) config('app.url'), '/');
 $navName = (string) ($appName ?? config('app.name'));
 $navEsc = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 $navItems = [
     'dashboard' => ['/', '📊', 'Dashboard'],
     'users' => ['/users', '👥', 'Users'],
-    'content' => ['/content', '📄', 'Content'],
+    'Pages' => ['/content', '📄', 'Pages'],
+    'test-content' => ['/test-content', '📝', 'Test Content'],
+    'content-categories' => ['/content-categories', '🗂️', 'Test Content Categories'],
     'library' => ['/library', '📚', 'Library'],
+    'media-categories' => ['/media-categories', '🗂️', 'Media Categories'],
     'app-users' => ['/app-users', '📱', 'App Users'],
+    'counsellors' => ['/counsellors', '🩺', 'Counsellors'],
+    'riyaz' => ['/riyaz', '🔄', 'Riyaz'],
 ];
 $navPlaceholders = [['📝', 'Check-ins'], ['🔔', 'Notifications'], ['📈', 'Reports'], ['⚙️', 'Settings']];
 ?>

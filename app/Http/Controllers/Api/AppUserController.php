@@ -14,11 +14,11 @@ class AppUserController extends Controller
 {
     public function register(Request $request, AppUser $users, AppUserToken $tokens): Response
     {
-        // Debug: print all request data        
         $input = $this->fields($request);
+        [$profile, $profileErrors] = $this->profileFields($request);
         $password = $this->string($request->input('password'));
 
-        $errors = $this->validateProfile($input, $users, null);
+        $errors = array_merge($this->validateProfile($input, $users, null), $profileErrors);
         if (strlen($password) < 8 || strlen($password) > 72) {
             $errors['password'] = 'Password must be 8 to 72 characters.';
         }
@@ -26,7 +26,14 @@ class AppUserController extends Controller
             return $this->fail('Validation failed.', 422, $errors);
         }
 
-        $id = $users->create($input['name'], $input['email'], $input['phone'], password_hash($password, PASSWORD_DEFAULT));
+        $id = $users->create(
+            $input['first_name'],
+            $input['last_name'],
+            $input['email'],
+            $input['phone'],
+            password_hash($password, PASSWORD_DEFAULT),
+            $profile
+        );
         $issued = $tokens->issue($id, $this->device($request));
 
         return $this->json([
@@ -98,7 +105,7 @@ class AppUserController extends Controller
 
         $id = (int) $user['id'];
         $input = [];
-        foreach (['name', 'email', 'phone'] as $field) {
+        foreach (['first_name', 'last_name', 'email', 'phone'] as $field) {
             $input[$field] = $request->input($field) !== null
                 ? $this->string($request->input($field))
                 : (string) $user[$field];
@@ -108,9 +115,17 @@ class AppUserController extends Controller
 
         $errors = $this->validateProfile($input, $users, $id);
         $changes = [];
-        foreach (['name', 'email', 'phone'] as $field) {
+        foreach (['first_name', 'last_name', 'email', 'phone'] as $field) {
             if ($input[$field] !== $user[$field]) {
                 $changes[$field] = $input[$field];
+            }
+        }
+
+        [$profile, $profileErrors] = $this->profileFields($request);
+        $errors = array_merge($errors, $profileErrors);
+        foreach ($profile as $field => $value) {
+            if ($value !== ($user[$field] ?? null)) {
+                $changes[$field] = $value;
             }
         }
 
@@ -141,14 +156,82 @@ class AppUserController extends Controller
         ]);
     }
 
-    /** @return array{name:string,email:string,phone:string} */
+    /** @return array{first_name:string,last_name:string,email:string,phone:string} */
     private function fields(Request $request): array
     {
         return [
-            'name' => $this->string($request->input('name')),
+            'first_name' => $this->string($request->input('first_name')),
+            'last_name' => $this->string($request->input('last_name')),
             'email' => strtolower($this->string($request->input('email'))),
             'phone' => $this->normalizePhone($this->string($request->input('phone'))),
         ];
+    }
+
+    /**
+     * @return array{0:array<string,mixed>,1:array<string,string>}
+     */
+    private function profileFields(Request $request): array
+    {
+        $body = $request->input();
+        $fields = [];
+        $errors = [];
+        $textLimits = [
+            'profile_thumbnail' => 255,
+            'device_id' => 255,
+            'current_stage' => 120,
+        ];
+
+        foreach ($textLimits as $field => $limit) {
+            if (!array_key_exists($field, $body)) {
+                continue;
+            }
+            $value = $body[$field];
+            if ($value !== null && !is_string($value)) {
+                $errors[$field] = 'Must be a string or null.';
+            } elseif (is_string($value) && mb_strlen(trim($value)) > $limit) {
+                $errors[$field] = "Must be {$limit} characters or fewer.";
+            } else {
+                $fields[$field] = is_string($value) ? trim($value) : null;
+            }
+        }
+
+        if (array_key_exists('birth_date', $body)) {
+            $value = $body['birth_date'];
+            $date = is_string($value) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $value) : false;
+            if ($value === null || $value === '') {
+                $fields['birth_date'] = null;
+            } elseif (
+                !is_string($value)
+                || $date === false
+                || $date->format('Y-m-d') !== $value
+            ) {
+                $errors['birth_date'] = 'Provide a valid date in YYYY-MM-DD format.';
+            } else {
+                $fields['birth_date'] = $value;
+            }
+        }
+
+        foreach ([
+            'reduce_stress',
+            'sleep_better',
+            'build_heithy_habits',
+            'journal_throughts',
+            'find_professional_support',
+        ] as $field) {
+            if (!array_key_exists($field, $body)) {
+                continue;
+            }
+            $value = $body[$field];
+            if ($value === true || $value === 1 || $value === '1') {
+                $fields[$field] = 1;
+            } elseif ($value === false || $value === 0 || $value === '0' || $value === null) {
+                $fields[$field] = 0;
+            } else {
+                $errors[$field] = 'Must be a boolean value.';
+            }
+        }
+
+        return [$fields, $errors];
     }
 
     /** @return array<string,string> */
@@ -156,9 +239,12 @@ class AppUserController extends Controller
     {
         $errors = [];
 
-        $length = mb_strlen($input['name']);
-        if ($length < 2 || $length > 120) {
-            $errors['name'] = 'Name must be 2 to 120 characters.';
+        $firstNameLength = mb_strlen($input['first_name']);
+        if ($firstNameLength < 1 || $firstNameLength > 120) {
+            $errors['first_name'] = 'First name must be 1 to 120 characters.';
+        }
+        if (mb_strlen($input['last_name']) > 120) {
+            $errors['last_name'] = 'Last name must be 120 characters or fewer.';
         }
 
         if (filter_var($input['email'], FILTER_VALIDATE_EMAIL) === false || strlen($input['email']) > 190) {
@@ -180,9 +266,19 @@ class AppUserController extends Controller
     {
         return [
             'id' => (int) $user['id'],
-            'name' => $user['name'],
             'email' => $user['email'],
             'phone' => $user['phone'],
+            'first_name' => $user['first_name'],
+            'last_name' => $user['last_name'],
+            'profile_thumbnail' => $user['profile_thumbnail'],
+            'device_id' => $user['device_id'],
+            'current_stage' => $user['current_stage'],
+            'birth_date' => $user['birth_date'],
+            'reduce_stress' => (bool) $user['reduce_stress'],
+            'sleep_better' => (bool) $user['sleep_better'],
+            'build_heithy_habits' => (bool) $user['build_heithy_habits'],
+            'journal_throughts' => (bool) $user['journal_throughts'],
+            'find_professional_support' => (bool) $user['find_professional_support'],
             'status' => $user['status'],
             'created_at' => $user['created_at'],
             'modified_at' => $user['modified_at'],

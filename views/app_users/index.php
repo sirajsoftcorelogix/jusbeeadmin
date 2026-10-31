@@ -62,8 +62,11 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                         </div>
                         <form method="POST" action="<?= $e($appUsersUrl) ?><?= $editing ? '/' . (int) $editingUser['id'] . '/update' : '' ?>" class="user-form content-form" autocomplete="off">
                             <?= $csrfField ?>
-                            <label for="name">Name</label>
-                            <input id="name" name="name" type="text" maxlength="120" value="<?= $e($formValues['name'] ?? '') ?>" required>
+                            <label for="first_name">First name</label>
+                            <input id="first_name" name="first_name" type="text" maxlength="120" value="<?= $e($formValues['first_name'] ?? '') ?>" required>
+
+                            <label for="last_name">Last name</label>
+                            <input id="last_name" name="last_name" type="text" maxlength="120" value="<?= $e($formValues['last_name'] ?? '') ?>">
 
                             <label for="email">Email</label>
                             <input id="email" name="email" type="email" maxlength="190" value="<?= $e($formValues['email'] ?? '') ?>" required>
@@ -114,7 +117,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                                         <?php foreach ($items as $item): ?>
                                             <?php $active = $item['status'] === 'active'; ?>
                                             <tr>
-                                                <td><strong class="content-page-title"><?= $e($item['name']) ?></strong></td>
+                                                <td><strong class="content-page-title"><?= $e(trim($item['first_name'] . ' ' . $item['last_name'])) ?></strong></td>
                                                 <td><?= $e($item['email']) ?><br><small><?= $e($item['phone']) ?></small></td>
                                                 <td><span class="status-badge <?= $active ? 'is-active' : 'is-inactive' ?>"><?= $active ? 'Active' : 'Inactive' ?></span></td>
                                                 <td class="content-date"><?= $item['last_login_at'] ? $e(date('M j, Y', strtotime((string) $item['last_login_at']))) : 'Never' ?></td>
