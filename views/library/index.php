@@ -15,7 +15,7 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $e($appName) ?> · Library</title>
+    <title><?= $e($appName) ?> · Media Library</title>
     <link rel="stylesheet" href="<?= $e($baseUrl) ?>/assets/css/dashboard.css">
 </head>
 <body class="dashboard-screen">
@@ -28,7 +28,7 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
                 <div class="topbar-left">
                     <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">☰</button>
                     <div class="topbar-title">
-                        <h1>Library</h1>
+                        <h1>Media Library</h1>
                         <p>Manage audio and video library items.</p>
                     </div>
                 </div>
@@ -43,7 +43,7 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
             <main class="dashboard-content">
                 <div class="content-header">
                     <div>
-                        <h2>Library items</h2>
+                        <h2>Media Library items</h2>
                         <p>Each item has a unique slug, thumbnail, and media file.</p>
                     </div>
                     <span class="user-count"><?= (int) $totalItems ?> total</span>

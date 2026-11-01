@@ -9,6 +9,8 @@ Use the application URL as the base URL. For example, a local XAMPP install may 
 ```text
 http://localhost/jusbeeadmin
 ```
+Use the application URL as the base URL of staging server
+https://jusbeeadmin.hexionit.com/
 
 Send JSON request bodies with:
 
