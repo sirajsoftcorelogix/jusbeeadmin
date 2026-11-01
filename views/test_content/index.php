@@ -12,7 +12,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $e($appName) ?> · Test Content</title>
+    <title><?= $e($appName) ?> · Text Content</title>
     <link rel="stylesheet" href="<?= $e($baseUrl) ?>/assets/css/dashboard.css">
 </head>
 <body class="dashboard-screen">
@@ -23,7 +23,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
             <header class="topbar">
                 <div class="topbar-left">
                     <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">☰</button>
-                    <div class="topbar-title"><h1>Test Content</h1><p>Create and manage app test content.</p></div>
+                    <div class="topbar-title"><h1>Text Content</h1><p>Create and manage app text content.</p></div>
                 </div>
                 <div class="topbar-right">
                     <form method="POST" action="<?= $e($baseUrl) ?>/logout">
@@ -34,14 +34,14 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
             </header>
             <main class="dashboard-content">
                 <div class="content-header">
-                    <div><h2>Test content</h2><p><?= count($items) ?> items · <a href="<?= $e($baseUrl) ?>/content-categories">Manage test content categories</a></p></div>
+                    <div><h2>Text Content</h2><p><?= count($items) ?> items · <a href="<?= $e($baseUrl) ?>/content-categories">Manage Text Content Categories</a></p></div>
                 </div>
                 <?php if ($error !== null): ?><p class="form-error" role="alert"><?= $e($error) ?></p><?php endif; ?>
                 <?php if ($notice !== null): ?><p class="form-success" role="status"><?= $e($notice) ?></p><?php endif; ?>
                 <div class="content-management-grid">
                     <section class="panel content-form-panel">
                         <div class="panel-header">
-                            <h2><?= $editing ? 'Edit test content' : 'New test content' ?></h2>
+                            <h2><?= $editing ? 'Edit Text Content' : 'New Text Content' ?></h2>
                             <?php if ($editing): ?><a class="panel-link" href="<?= $e($contentUrl) ?>">Cancel</a><?php endif; ?>
                         </div>
                         <form method="POST" action="<?= $e($contentUrl) ?><?= $editing ? '/' . (int) $editingContent['id'] . '/update' : '' ?>" class="user-form content-form" enctype="multipart/form-data">
@@ -76,14 +76,14 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                                 <?php endforeach; ?>
                             </select>
                             <p class="field-hint">Use Ctrl or Command to select multiple categories.</p>
-                            <button type="submit" class="primary-button"><?= $editing ? 'Save changes' : 'Create test content' ?></button>
+                            <button type="submit" class="primary-button"><?= $editing ? 'Save changes' : 'Create Text Content' ?></button>
                         </form>
                     </section>
                     <section class="panel content-pages-panel">
                         <div class="panel-header content-pages-header">
-                            <div><h2>All test content</h2><p>Search by title or slug.</p></div>
+                            <div><h2>All Text Content</h2><p>Search by title or slug.</p></div>
                             <form method="GET" action="<?= $e($contentUrl) ?>" class="user-filters">
-                                <label class="visually-hidden" for="contentSearch">Search test content</label>
+                                <label class="visually-hidden" for="contentSearch">Search Text Content</label>
                                 <input id="contentSearch" type="search" name="search" value="<?= $e($search) ?>" placeholder="Search title or slug">
                                 <button type="submit" class="secondary-button">Search</button>
                             </form>
@@ -93,7 +93,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                                 <thead><tr><th>Title / slug</th><th>Categories</th><th>Thumbnail</th><th>Updated by</th><th>Updated</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
                                 <tbody>
                                 <?php if ($items === []): ?>
-                                    <tr><td colspan="6" class="empty-state">No test content found.</td></tr>
+                                    <tr><td colspan="6" class="empty-state">No text content found.</td></tr>
                                 <?php else: ?>
                                     <?php foreach ($items as $item): ?>
                                         <tr>
@@ -108,7 +108,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                                             <td class="content-date"><?= $e(date('M j, Y', strtotime((string) $item['updated_date_time']))) ?></td>
                                             <td class="user-actions content-actions">
                                                 <a class="text-action" href="<?= $e($contentUrl) ?>?edit=<?= (int) $item['id'] ?>">Edit</a>
-                                                <form method="POST" action="<?= $e($contentUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this test content permanently?">
+                                                <form method="POST" action="<?= $e($contentUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this text content permanently?">
                                                     <?= $csrfField ?>
                                                     <button type="submit" class="text-action is-danger">Delete</button>
                                                 </form>
