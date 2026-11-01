@@ -21,8 +21,8 @@ class TestContent extends Model
         $statement = $this->db->connection()->prepare(
             "SELECT content.*, editor.name AS updated_by_name,
                     (SELECT GROUP_CONCAT(category.category_name ORDER BY category.category_name SEPARATOR ', ')
-                     FROM Category_content_map content_map
-                     JOIN Content_Categories category ON category.slug = content_map.category_slug
+                     FROM category_content_map content_map
+                     JOIN content_categories category ON category.slug = content_map.category_slug
                      WHERE content_map.content_slug = content.slug) AS category_names
              FROM {$this->table} content
              LEFT JOIN ju_users editor ON editor.id = content.updated_by{$where}
@@ -122,7 +122,7 @@ class TestContent extends Model
     public function categorySlugs(string $contentSlug): array
     {
         $statement = $this->db->connection()->prepare(
-            "SELECT category_slug FROM Category_content_map WHERE content_slug = :content_slug"
+            "SELECT category_slug FROM category_content_map WHERE content_slug = :content_slug"
         );
         $statement->execute(['content_slug' => $contentSlug]);
 
@@ -135,7 +135,7 @@ class TestContent extends Model
             "SELECT content.id, content.slug, content.title, content.short_test,
                     content.thumb_nail, content.added_date_time, content.updated_date_time
              FROM {$this->table} content
-             INNER JOIN Category_content_map content_map ON content_map.content_slug = content.slug
+             INNER JOIN category_content_map content_map ON content_map.content_slug = content.slug
              WHERE content_map.category_slug = :category_slug
              ORDER BY content.updated_date_time DESC, content.id DESC"
         );
@@ -148,8 +148,8 @@ class TestContent extends Model
     {
         $statement = $this->db->connection()->prepare(
             "SELECT category.category_id, category.category_name, category.slug, category.parent_id
-             FROM Category_content_map content_map
-             INNER JOIN Content_Categories category ON category.slug = content_map.category_slug
+             FROM category_content_map content_map
+             INNER JOIN content_categories category ON category.slug = content_map.category_slug
              WHERE content_map.content_slug = :content_slug
              ORDER BY category.category_name, category.category_id"
         );
@@ -163,7 +163,7 @@ class TestContent extends Model
         $categorySlugs = array_values(array_unique($categorySlugs));
         if ($categorySlugs === []) {
             $connection->prepare(
-                "DELETE FROM Category_content_map WHERE content_slug = :content_slug"
+                "DELETE FROM category_content_map WHERE content_slug = :content_slug"
             )->execute(['content_slug' => $contentSlug]);
 
             return;
@@ -177,12 +177,12 @@ class TestContent extends Model
             $parameters[$key] = $slug;
         }
         $connection->prepare(
-            "DELETE FROM Category_content_map
+            "DELETE FROM category_content_map
              WHERE content_slug = :content_slug AND category_slug NOT IN (" . implode(', ', $placeholders) . ')'
         )->execute($parameters);
 
         $insert = $connection->prepare(
-            "INSERT INTO Category_content_map (category_slug, content_slug, updated_by)
+            "INSERT INTO category_content_map (category_slug, content_slug, updated_by)
              VALUES (:category_slug, :content_slug, :updated_by)
              ON DUPLICATE KEY UPDATE updated_by = VALUES(updated_by)"
         );

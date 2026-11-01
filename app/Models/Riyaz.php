@@ -8,7 +8,7 @@ use App\Core\Model;
 
 class Riyaz extends Model
 {
-    protected string $table = 'Riyaz';
+    protected string $table = 'riyaz';
 
     public function all(): array
     {
