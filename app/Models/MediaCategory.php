@@ -8,7 +8,7 @@ use App\Core\Model;
 
 class MediaCategory extends Model
 {
-    protected string $table = 'Media_Categories';
+    protected string $table = 'media_categories';
 
     public function all(): array
     {

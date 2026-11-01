@@ -32,7 +32,7 @@ class Library extends Model
             "SELECT ju_library.*, ju_users.name AS updated_by_name,
                     (SELECT GROUP_CONCAT(category.category_name ORDER BY category.category_name SEPARATOR ', ')
                      FROM category_media_map category_map
-                     JOIN Media_Categories category ON category.slug = category_map.category_slug
+                     JOIN media_categories category ON category.slug = category_map.category_slug
                      WHERE category_map.media_slug = ju_library.slug) AS category_names
              FROM {$this->table}
              LEFT JOIN ju_users ON ju_users.id = ju_library.updated_by{$where}
@@ -176,7 +176,7 @@ class Library extends Model
         $statement = $this->db->connection()->prepare(
             "SELECT category.category_id, category.category_name, category.slug, category.parent_id
              FROM category_media_map category_map
-             INNER JOIN Media_Categories category ON category.slug = category_map.category_slug
+             INNER JOIN media_categories category ON category.slug = category_map.category_slug
              WHERE category_map.media_slug = :media_slug
              ORDER BY category.category_name ASC, category.category_id ASC"
         );
