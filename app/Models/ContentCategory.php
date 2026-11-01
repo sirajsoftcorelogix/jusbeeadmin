@@ -8,7 +8,7 @@ use App\Core\Model;
 
 class ContentCategory extends Model
 {
-    protected string $table = 'Content_Categories';
+    protected string $table = 'content_categories';
 
     public function all(): array
     {
