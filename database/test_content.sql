@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS test_content (
     CONSTRAINT fk_test_content_updated_by FOREIGN KEY (updated_by) REFERENCES ju_users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS Category_content_map (
+CREATE TABLE IF NOT EXISTS category_content_map (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     category_slug VARCHAR(160) NOT NULL,
     content_slug VARCHAR(160) NOT NULL,

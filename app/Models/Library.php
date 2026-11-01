@@ -31,7 +31,7 @@ class Library extends Model
         $statement = $this->db->connection()->prepare(
             "SELECT ju_library.*, ju_users.name AS updated_by_name,
                     (SELECT GROUP_CONCAT(category.category_name ORDER BY category.category_name SEPARATOR ', ')
-                     FROM Category_media_map category_map
+                     FROM category_media_map category_map
                      JOIN Media_Categories category ON category.slug = category_map.category_slug
                      WHERE category_map.media_slug = ju_library.slug) AS category_names
              FROM {$this->table}
@@ -128,7 +128,7 @@ class Library extends Model
     public function categorySlugs(string $mediaSlug): array
     {
         $statement = $this->db->connection()->prepare(
-            "SELECT category_slug FROM Category_media_map WHERE media_slug = :media_slug"
+            "SELECT category_slug FROM category_media_map WHERE media_slug = :media_slug"
         );
         $statement->execute(['media_slug' => $mediaSlug]);
 
@@ -142,7 +142,7 @@ class Library extends Model
                     media.media_type, media.play_time, media.artist, media.description,
                     media.created_at, media.modified_at
              FROM {$this->table} media
-             INNER JOIN Category_media_map category_map ON category_map.media_slug = media.slug
+             INNER JOIN category_media_map category_map ON category_map.media_slug = media.slug
              WHERE category_map.category_slug = :category_slug AND media.status = 'active'
              ORDER BY media.title ASC, media.id DESC"
         );
@@ -175,7 +175,7 @@ class Library extends Model
     {
         $statement = $this->db->connection()->prepare(
             "SELECT category.category_id, category.category_name, category.slug, category.parent_id
-             FROM Category_media_map category_map
+             FROM category_media_map category_map
              INNER JOIN Media_Categories category ON category.slug = category_map.category_slug
              WHERE category_map.media_slug = :media_slug
              ORDER BY category.category_name ASC, category.category_id ASC"
@@ -194,7 +194,7 @@ class Library extends Model
         $categorySlugs = array_values(array_unique($categorySlugs));
         if ($categorySlugs === []) {
             $connection->prepare(
-                "DELETE FROM Category_media_map WHERE media_slug = :media_slug"
+                "DELETE FROM category_media_map WHERE media_slug = :media_slug"
             )->execute(['media_slug' => $mediaSlug]);
 
             return;
@@ -208,12 +208,12 @@ class Library extends Model
             $deleteParameters[$placeholder] = $categorySlug;
         }
         $connection->prepare(
-            "DELETE FROM Category_media_map
+            "DELETE FROM category_media_map
              WHERE media_slug = :media_slug AND category_slug NOT IN (" . implode(', ', $placeholders) . ')'
         )->execute($deleteParameters);
 
         $insert = $connection->prepare(
-            "INSERT INTO Category_media_map (category_slug, media_slug, updated_by)
+            "INSERT INTO category_media_map (category_slug, media_slug, updated_by)
              VALUES (:category_slug, :media_slug, :updated_by)
              ON DUPLICATE KEY UPDATE updated_by = VALUES(updated_by)"
         );

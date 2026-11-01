@@ -8,7 +8,7 @@ use App\Core\Model;
 
 class Counsellor extends Model
 {
-    protected string $table = 'Counsellors';
+    protected string $table = 'counsellors';
 
     public function search(string $term = ''): array
     {
