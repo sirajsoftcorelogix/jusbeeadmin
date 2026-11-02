@@ -6,9 +6,9 @@ namespace App\Models;
 
 use App\Core\Model;
 
-class TestContent extends Model
+class TextContent extends Model
 {
-    protected string $table = 'test_content';
+    protected string $table = 'text_content';
 
     public function search(string $term = ''): array
     {

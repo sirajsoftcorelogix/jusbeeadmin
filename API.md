@@ -45,8 +45,8 @@ Notification preference endpoints are `POST /api/Set_user_notification` and `GET
 | `GET` | `/api/media-categories/{slug}` | Bearer token | Get a category and its child categories |
 | `GET` | `/api/media-categories/{slug}/media` | Bearer token | List active media in a category |
 | `GET` | `/api/media/{slug}` | Bearer token | Get active media content by slug |
-| `GET` | `/api/test-content/category/{slug}` | Bearer token | List test content assigned to a category |
-| `GET` | `/api/test-content/{slug}` | Bearer token | Get test content details by slug |
+| `GET` | `/api/text-content/category/{slug}` | Bearer token | List text content assigned to a category |
+| `GET` | `/api/text-content/{slug}` | Bearer token | Get text content details by slug |
 | `POST` | `/api/logout` | Bearer token | Revoke the current token |
 | `POST` | `/api/logout-all` | Bearer token | Revoke all tokens for the authenticated user |
 
@@ -484,15 +484,15 @@ Returns the media fields shown above and the categories assigned to the media:
 
 The `thumbnail` and `media_file` values are paths relative to the application base URL. A missing category or unavailable/inactive media item returns `404 Not Found`.
 
-## Test content
+## Text content
 
-Test-content endpoints require a valid app-user bearer token. Content is available through the API once an admin creates it; the test-content schema has no draft/status field.
+Text-content endpoints require a valid app-user bearer token. Content is available through the API once an admin creates it; the text-content schema has no draft/status field.
 
-### List test content by category
+### List text content by category
 
-`GET /api/test-content/category/{category_slug}`
+`GET /api/text-content/category/{category_slug}`
 
-Example: `GET /api/test-content/category/sleep`
+Example: `GET /api/text-content/category/sleep`
 
 ```json
 {
@@ -509,7 +509,7 @@ Example: `GET /api/test-content/category/sleep`
       "slug": "sleep-routine",
       "title": "Build a sleep routine",
       "short_test": "A few ideas for a restful evening.",
-      "thumb_nail": "uploads/test-content/thumbnail-example.webp",
+      "thumb_nail": "uploads/text-content/thumbnail-example.webp",
       "added_date_time": "2030-01-01 10:00:00",
       "updated_date_time": "2030-01-02 10:00:00"
     }
@@ -519,11 +519,11 @@ Example: `GET /api/test-content/category/sleep`
 
 The list includes items directly assigned to the requested category. `full_text` is returned by the detail endpoint. If the category has no content, `contents` is an empty array.
 
-### Get test content by slug
+### Get text content by slug
 
-`GET /api/test-content/{content_slug}`
+`GET /api/text-content/{content_slug}`
 
-Example: `GET /api/test-content/sleep-routine`
+Example: `GET /api/text-content/sleep-routine`
 
 ```json
 {
@@ -534,7 +534,7 @@ Example: `GET /api/test-content/sleep-routine`
     "title": "Build a sleep routine",
     "short_test": "A few ideas for a restful evening.",
     "full_text": "Keep a consistent bedtime. Dim the lights and take time to wind down before sleep.",
-    "thumb_nail": "uploads/test-content/thumbnail-example.webp",
+    "thumb_nail": "uploads/text-content/thumbnail-example.webp",
     "updated_by": 2,
     "added_date_time": "2030-01-01 10:00:00",
     "updated_date_time": "2030-01-02 10:00:00",
@@ -552,7 +552,7 @@ Example: `GET /api/test-content/sleep-routine`
 
 The thumbnail path is relative to the application base URL. An unknown category or content slug returns `404 Not Found`.
 
-Create the test-content, category, and mapping tables with `database/test_content.sql` after `ju_users` exists.
+Create the text-content, category, and mapping tables with `database/text_content.sql` after `ju_users` exists. Existing installations should run `database/migrate_text_content_table.sql` to rename the existing `test_content` table.
 
 ## Counsellors
 

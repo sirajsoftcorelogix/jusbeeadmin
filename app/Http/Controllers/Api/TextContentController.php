@@ -7,11 +7,11 @@ namespace App\Http\Controllers\Api;
 use App\Core\Controller;
 use App\Core\Response;
 use App\Models\ContentCategory;
-use App\Models\TestContent;
+use App\Models\TextContent;
 
-class TestContentController extends Controller
+class TextContentController extends Controller
 {
-    public function byCategory(string $slug, ContentCategory $categories, TestContent $contents): Response
+    public function byCategory(string $slug, ContentCategory $categories, TextContent $contents): Response
     {
         $category = $categories->findBySlug($slug);
         if ($category === null) {
@@ -39,7 +39,7 @@ class TestContentController extends Controller
         ]);
     }
 
-    public function bySlug(string $slug, TestContent $contents): Response
+    public function bySlug(string $slug, TextContent $contents): Response
     {
         $item = $contents->findBySlug($slug);
         if ($item === null) {

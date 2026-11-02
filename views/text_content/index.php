@@ -18,7 +18,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
 <body class="dashboard-screen">
     <div class="dashboard-layout">
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-        <?php $activeNav = 'test-content'; require dirname(__DIR__) . '/partials/sidebar.php'; ?>
+        <?php $activeNav = 'text-content'; require dirname(__DIR__) . '/partials/sidebar.php'; ?>
         <div class="dashboard-main">
             <header class="topbar">
                 <div class="topbar-left">

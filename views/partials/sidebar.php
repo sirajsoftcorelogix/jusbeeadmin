@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Expects $activeNav (dashboard|users|content|test-content|content-categories|library|media-categories|app-users|counsellors|riyaz) and optionally $appName.
+// Expects $activeNav (dashboard|users|content|text-content|content-categories|library|media-categories|app-users|counsellors|riyaz) and optionally $appName.
 $navBase = rtrim((string) config('app.url'), '/');
 $navName = (string) ($appName ?? config('app.name'));
 $navEsc = static fn (string $value): string => htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -10,8 +10,8 @@ $navItems = [
     'dashboard' => ['/', '📊', 'Dashboard'],
     'users' => ['/users', '👥', 'Users'],
     'Pages' => ['/content', '📄', 'Pages'],
-    'test-content' => ['/test-content', '📝', 'Text Content'],
-    'content-categories' => ['/content-categories', '🗂️', 'Test Content Categories'],
+    'text-content' => ['/text-content', '📝', 'Text Content'],
+    'content-categories' => ['/content-categories', '🗂️', 'Text Content Categories'],
     'library' => ['/library', '📚', 'Media Library'],
     'media-categories' => ['/media-categories', '🗂️', 'Media Categories'],
     'app-users' => ['/app-users', '📱', 'App Users'],

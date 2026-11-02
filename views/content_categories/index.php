@@ -12,7 +12,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $e($appName) ?> · Test Content Categories</title>
+    <title><?= $e($appName) ?> · Text Content Categories</title>
     <link rel="stylesheet" href="<?= $e($baseUrl) ?>/assets/css/dashboard.css">
 </head>
 <body class="dashboard-screen">
@@ -23,7 +23,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
             <header class="topbar">
                 <div class="topbar-left">
                     <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">☰</button>
-                    <div class="topbar-title"><h1>Test Content Categories</h1><p>Organize test content into parent and child categories.</p></div>
+                    <div class="topbar-title"><h1>Text Content Categories</h1><p>Organize text content into parent and child categories.</p></div>
                 </div>
                 <div class="topbar-right">
                     <form method="POST" action="<?= $e($baseUrl) ?>/logout">
@@ -33,7 +33,7 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                 </div>
             </header>
             <main class="dashboard-content">
-                <div class="content-header"><div><h2>Categories</h2><p><?= count($categories) ?> categories · <a href="<?= $e($baseUrl) ?>/test-content">Manage test content</a></p></div></div>
+                <div class="content-header"><div><h2>Categories</h2><p><?= count($categories) ?> categories · <a href="<?= $e($baseUrl) ?>/text-content">Manage text content</a></p></div></div>
                 <?php if ($error !== null): ?><p class="form-error" role="alert"><?= $e($error) ?></p><?php endif; ?>
                 <?php if ($notice !== null): ?><p class="form-success" role="status"><?= $e($notice) ?></p><?php endif; ?>
                 <div class="content-management-grid">

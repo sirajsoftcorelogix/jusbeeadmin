@@ -11,16 +11,16 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Models\ContentCategory;
-use App\Models\TestContent;
+use App\Models\TextContent;
 
-class TestContentController extends Controller
+class TextContentController extends Controller
 {
     private const MAX_THUMBNAIL_BYTES = 104857600;
 
     public function index(
         Request $request,
         Csrf $csrf,
-        TestContent $contents,
+        TextContent $contents,
         ContentCategory $categories
     ): Response {
         $editing = null;
@@ -49,7 +49,7 @@ class TestContentController extends Controller
     public function store(
         Request $request,
         Csrf $csrf,
-        TestContent $contents,
+        TextContent $contents,
         ContentCategory $categories,
         Session $session
     ): Response {
@@ -89,7 +89,7 @@ class TestContentController extends Controller
         string $id,
         Request $request,
         Csrf $csrf,
-        TestContent $contents,
+        TextContent $contents,
         ContentCategory $categories,
         Session $session
     ): Response {
@@ -141,7 +141,7 @@ class TestContentController extends Controller
         return $this->redirect($this->contentUrl() . '?notice=saved');
     }
 
-    public function destroy(string $id, TestContent $contents): Response
+    public function destroy(string $id, TextContent $contents): Response
     {
         $contentId = $this->contentId($id);
         $content = $contents->find($contentId);
@@ -179,7 +179,7 @@ class TestContentController extends Controller
 
     private function validateInput(
         array $input,
-        TestContent $contents,
+        TextContent $contents,
         ContentCategory $categories,
         ?int $excludeId = null
     ): ?string {
@@ -243,7 +243,7 @@ class TestContentController extends Controller
             return [$existing, 'Thumbnail must be a WebP or JPEG image.'];
         }
 
-        $directory = dirname(__DIR__, 3) . '/public/uploads/test-content';
+        $directory = dirname(__DIR__, 3) . '/public/uploads/text-content';
         if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
             return [$existing, 'Unable to create thumbnail upload directory.'];
         }
@@ -252,12 +252,12 @@ class TestContentController extends Controller
             return [$existing, 'Thumbnail upload failed.'];
         }
 
-        return ['uploads/test-content/' . $name, null];
+        return ['uploads/text-content/' . $name, null];
     }
 
     private function deleteThumbnail(mixed $path): void
     {
-        if (!is_string($path) || preg_match('#^uploads/test-content/[A-Za-z0-9._-]+$#', $path) !== 1) {
+        if (!is_string($path) || preg_match('#^uploads/(?:text-content|test-content)/[A-Za-z0-9._-]+$#', $path) !== 1) {
             return;
         }
         $fullPath = dirname(__DIR__, 3) . '/public/' . $path;
@@ -269,13 +269,13 @@ class TestContentController extends Controller
     private function renderIndex(
         Request $request,
         Csrf $csrf,
-        TestContent $contents,
+        TextContent $contents,
         ContentCategory $categories,
         array $options = []
     ): Response {
         $search = trim((string) $request->query('search', ''));
 
-        return $this->view('test_content.index', [
+        return $this->view('text_content.index', [
             'appName' => (string) config('app.name'),
             'baseUrl' => rtrim((string) config('app.url'), '/'),
             'contentUrl' => $this->contentUrl(),
@@ -293,7 +293,7 @@ class TestContentController extends Controller
 
     private function contentUrl(): string
     {
-        return rtrim((string) config('app.url'), '/') . '/test-content';
+        return rtrim((string) config('app.url'), '/') . '/text-content';
     }
 
     private function contentId(string $id): int

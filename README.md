@@ -48,10 +48,10 @@ A basic but modern MVC framework starter for PHP 8.2+, designed for XAMPP and fo
 - `POST /content/{id}/update` - update a content page
 - `POST /content/{id}/status` - publish or unpublish a content page
 - `POST /content/{id}/delete` - delete a content page
-- `GET /test-content` - admin-only test content management
-- `POST /test-content` / `POST /test-content/{id}/update` / `POST /test-content/{id}/delete` - create, edit, and delete test content
-- `GET /content-categories` - admin-only test content category management
-- `POST /content-categories` / `POST /content-categories/{id}/update` / `POST /content-categories/{id}/delete` - create, edit, and delete test content categories
+- `GET /text-content` - admin-only text content management
+- `POST /text-content` / `POST /text-content/{id}/update` / `POST /text-content/{id}/delete` - create, edit, and delete text content
+- `GET /content-categories` - admin-only text content category management
+- `POST /content-categories` / `POST /content-categories/{id}/update` / `POST /content-categories/{id}/delete` - create, edit, and delete text content categories
 - `GET /pages/{slug}` - view a published page
 - `GET /library` - admin-only library management
 - `POST /library` - create a library item
@@ -68,7 +68,7 @@ Library items are stored in `ju_library` (title, slug, thumbnail, media file, me
 
 Media categories are stored in `media_categories` and assigned to library items through `category_media_map`, using category and media slugs. Create these tables with `database/media_categories.sql` after `ju_users`, `ju_library`, and their migrations are installed. Library item create/edit forms support assigning multiple categories.
 
-Test content is stored in `test_content`, categorized with `Content_Categories`, and assigned through `category_content_map`. Create these tables with `database/test_content.sql` after `ju_users` exists. Test-content thumbnails accept WebP/JPEG and are stored under `public/uploads/test-content/`. The authenticated app APIs list test content by category and retrieve test content by slug; see [API.md](./API.md).
+Text content is stored in `text_content`, categorized with `Content_Categories`, and assigned through `category_content_map`. Create these tables with `database/text_content.sql` after `ju_users` exists. Text-content thumbnails accept WebP/JPEG and are stored under `public/uploads/text-content/`. The authenticated app APIs list text content by category and retrieve text content by slug; see [API.md](./API.md). Existing installations should first run `database/migrate_text_content_table.sql`.
 
 Counsellors are stored in `Counsellors`; initialize the table with `database/counsellors.sql` after `ju_users` exists. Admins manage counsellor profiles, verification status, fees, and WebP/JPEG profile thumbnails at `/counsellors`. Authenticated app APIs expose only verified counsellors via `GET /api/counsellors` and `GET /api/counsellors/{id}`. The requested `/api/conselor_list` and `/api/conselor_by_id/{id}` aliases are also available; see [API.md](./API.md).
 
