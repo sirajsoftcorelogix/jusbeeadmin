@@ -46,25 +46,85 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
                         <h2>Media Library items</h2>
                         <p>Each item has a unique slug, thumbnail, and media file.</p>
                     </div>
-                    <span class="user-count"><?= (int) $totalItems ?> total</span>
+                    <div class="content-header-actions">
+                        <span class="user-count"><?= (int) $totalItems ?> total</span>
+                        <button type="button" class="primary-button" data-modal-open="#libraryItemModal">Add item</button>
+                    </div>
                 </div>
 
-                <?php if ($error !== null): ?>
-                    <p class="form-error" role="alert"><?= $e($error) ?></p>
-                <?php endif; ?>
                 <?php if ($notice !== null): ?>
                     <p class="form-success" role="status"><?= $e($notice) ?></p>
                 <?php endif; ?>
 
-                <div class="content-management-grid">
-                    <section class="panel content-form-panel" aria-labelledby="libraryFormTitle">
-                        <div class="panel-header">
-                            <h2 id="libraryFormTitle"><?= $editing ? 'Edit item' : 'New item' ?></h2>
-                            <?php if ($editing): ?>
-                                <a class="panel-link" href="<?= $e($libraryUrl) ?>">Cancel</a>
-                            <?php endif; ?>
+                <section class="panel content-pages-panel" aria-labelledby="libraryListTitle">
+                    <div class="panel-header content-pages-header">
+                        <div>
+                            <h2 id="libraryListTitle">All items</h2>
+                            <p><?= count($items) ?> of <?= (int) $totalItems ?> items</p>
                         </div>
-                        <form method="POST" action="<?= $e($libraryUrl) ?><?= $editing ? '/' . (int) $editingItem['id'] . '/update' : '' ?>" class="user-form content-form" enctype="multipart/form-data">
+                        <form method="GET" action="<?= $e($libraryUrl) ?>" class="user-filters">
+                            <label class="visually-hidden" for="librarySearch">Search library items</label>
+                            <input id="librarySearch" type="search" name="search" value="<?= $e($search) ?>" placeholder="Search title, slug, artist">
+                            <label class="visually-hidden" for="libraryStatus">Filter by status</label>
+                            <select id="libraryStatus" name="status">
+                                <option value="all"<?= $status === 'all' ? ' selected' : '' ?>>All statuses</option>
+                                <option value="active"<?= $status === 'active' ? ' selected' : '' ?>>Active</option>
+                                <option value="inactive"<?= $status === 'inactive' ? ' selected' : '' ?>>Inactive</option>
+                            </select>
+                            <button type="submit" class="secondary-button">Filter</button>
+                        </form>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table content-table">
+                            <thead>
+                                <tr><th>Title / slug</th><th>Categories</th><th>Thumbnail</th><th>Media</th><th>Artist / play time</th><th>Updated by</th><th>Status</th><th>Modified</th><th><span class="visually-hidden">Actions</span></th></tr>
+                            </thead>
+                            <tbody>
+                                <?php if ($items === []): ?>
+                                    <tr><td colspan="9" class="empty-state">No library items found.</td></tr>
+                                <?php else: ?>
+                                    <?php foreach ($items as $item): ?>
+                                        <?php $active = $item['status'] === 'active'; ?>
+                                        <tr>
+                                            <td><strong class="content-page-title"><?= $e($item['title']) ?></strong><br><small><?= $e($item['slug']) ?></small></td>
+                                            <td><?= $e($item['category_names'] ?? '') ?></td>
+                                            <td>
+                                                <?php if (!empty($item['thumbnail'])): ?>
+                                                    <a href="<?= $e($baseUrl . '/' . $item['thumbnail']) ?>" target="_blank" rel="noopener noreferrer">View thumbnail</a>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <span class="role-badge"><?= $e($item['media_type']) ?></span>
+                                                <?php if (!empty($item['media_file'])): ?>
+                                                    <a class="text-action" href="<?= $e($baseUrl . '/' . $item['media_file']) ?>" target="_blank" rel="noopener noreferrer"><?= $e(basename((string) $item['media_file'])) ?></a>
+                                                <?php else: ?>
+                                                    <small>Upload a media file</small>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= $e($item['artist'] ?? '') ?><br><small><?= $e($item['play_time'] ?? '') ?></small></td>
+                                            <td><?= $e($item['updated_by_name'] ?? '') ?></td>
+                                            <td><span class="status-badge <?= $active ? 'is-active' : 'is-inactive' ?>"><?= $active ? 'Active' : 'Inactive' ?></span></td>
+                                            <td class="content-date"><?= $e(date('M j, Y', strtotime((string) $item['modified_at']))) ?></td>
+                                            <td class="user-actions content-actions">
+                                                <a class="text-action" href="<?= $e($libraryUrl) ?>?edit=<?= (int) $item['id'] ?>">Edit</a>
+                                                <form method="POST" action="<?= $e($libraryUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this library item permanently?">
+                                                    <?= $csrfField ?>
+                                                    <button type="submit" class="text-action is-danger">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <?php ob_start(); ?>
+                    <?php if ($error !== null): ?>
+                        <p class="form-error" role="alert"><?= $e($error) ?></p>
+                    <?php endif; ?>
+                    <form method="POST" action="<?= $e($libraryUrl) ?><?= $editing ? '/' . (int) $editingItem['id'] . '/update' : '' ?>" class="user-form content-form" enctype="multipart/form-data">
                             <?= $csrfField ?>
                             <label for="title">Title</label>
                             <input id="title" name="title" type="text" maxlength="255" value="<?= $e($formValues['title'] ?? '') ?>" required>
@@ -122,76 +182,17 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
                                 <option value="inactive"<?= $formStatus === 'inactive' ? ' selected' : '' ?>>Inactive</option>
                             </select>
                             <button type="submit" class="primary-button"><?= $editing ? 'Save changes' : 'Create item' ?></button>
-                        </form>
-                    </section>
-
-                    <section class="panel content-pages-panel" aria-labelledby="libraryListTitle">
-                        <div class="panel-header content-pages-header">
-                            <div>
-                                <h2 id="libraryListTitle">All items</h2>
-                                <p><?= count($items) ?> of <?= (int) $totalItems ?> items</p>
-                            </div>
-                            <form method="GET" action="<?= $e($libraryUrl) ?>" class="user-filters">
-                                <label class="visually-hidden" for="librarySearch">Search library items</label>
-                                <input id="librarySearch" type="search" name="search" value="<?= $e($search) ?>" placeholder="Search title, slug, artist">
-                                <label class="visually-hidden" for="libraryStatus">Filter by status</label>
-                                <select id="libraryStatus" name="status">
-                                    <option value="all"<?= $status === 'all' ? ' selected' : '' ?>>All statuses</option>
-                                    <option value="active"<?= $status === 'active' ? ' selected' : '' ?>>Active</option>
-                                    <option value="inactive"<?= $status === 'inactive' ? ' selected' : '' ?>>Inactive</option>
-                                </select>
-                                <button type="submit" class="secondary-button">Filter</button>
-                            </form>
-                        </div>
-                        <div class="table-wrap">
-                            <table class="data-table content-table">
-                                <thead>
-                                    <tr><th>Title / slug</th><th>Categories</th><th>Thumbnail</th><th>Media</th><th>Artist / play time</th><th>Updated by</th><th>Status</th><th>Modified</th><th><span class="visually-hidden">Actions</span></th></tr>
-                                </thead>
-                                <tbody>
-                                    <?php if ($items === []): ?>
-                                        <tr><td colspan="9" class="empty-state">No library items found.</td></tr>
-                                    <?php else: ?>
-                                        <?php foreach ($items as $item): ?>
-                                            <?php $active = $item['status'] === 'active'; ?>
-                                            <tr>
-                                                <td><strong class="content-page-title"><?= $e($item['title']) ?></strong><br><small><?= $e($item['slug']) ?></small></td>
-                                                <td><?= $e($item['category_names'] ?? '') ?></td>
-                                                <td>
-                                                    <?php if (!empty($item['thumbnail'])): ?>
-                                                        <a href="<?= $e($baseUrl . '/' . $item['thumbnail']) ?>" target="_blank" rel="noopener noreferrer">View thumbnail</a>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td>
-                                                    <span class="role-badge"><?= $e($item['media_type']) ?></span>
-                                                    <?php if (!empty($item['media_file'])): ?>
-                                                        <a class="text-action" href="<?= $e($baseUrl . '/' . $item['media_file']) ?>" target="_blank" rel="noopener noreferrer"><?= $e(basename((string) $item['media_file'])) ?></a>
-                                                    <?php else: ?>
-                                                        <small>Upload a media file</small>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?= $e($item['artist'] ?? '') ?><br><small><?= $e($item['play_time'] ?? '') ?></small></td>
-                                                <td><?= $e($item['updated_by_name'] ?? '') ?></td>
-                                                <td><span class="status-badge <?= $active ? 'is-active' : 'is-inactive' ?>"><?= $active ? 'Active' : 'Inactive' ?></span></td>
-                                                <td class="content-date"><?= $e(date('M j, Y', strtotime((string) $item['modified_at']))) ?></td>
-                                                <td class="user-actions content-actions">
-                                                    <a class="text-action" href="<?= $e($libraryUrl) ?>?edit=<?= (int) $item['id'] ?>">Edit</a>
-                                                    <form method="POST" action="<?= $e($libraryUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this library item permanently?">
-                                                        <?= $csrfField ?>
-                                                        <button type="submit" class="text-action is-danger">Delete</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </div>
+                    </form>
+                <?php
+                    $modalContent = (string) ob_get_clean();
+                    $modalId = 'libraryItemModal';
+                    $modalTitle = $editing ? 'Edit library item' : 'New library item';
+                    $modalOpen = $editing || $error !== null;
+                    require dirname(__DIR__) . '/partials/modal.php';
+                ?>
             </main>
         </div>
     </div>
-    <script src="<?= $e($baseUrl) ?>/assets/js/dashboard.js"></script>
+    <script src="<?= $e($baseUrl) ?>/assets/js/dashboard.js?v=library-modal-2"></script>
 </body>
 </html>

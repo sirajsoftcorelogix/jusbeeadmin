@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS Content_Categories (
+CREATE TABLE IF NOT EXISTS content_categories (
     category_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL,
     slug VARCHAR(160) NOT NULL UNIQUE,

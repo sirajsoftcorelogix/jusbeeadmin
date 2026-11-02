@@ -32,16 +32,49 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                 </div>
             </header>
             <main class="dashboard-content">
-                <div class="content-header"><div><h2>Riyaz</h2><p><?= count($items) ?> records</p></div></div>
-                <?php if ($error !== null): ?><p class="form-error" role="alert"><?= $e($error) ?></p><?php endif; ?>
+                <div class="content-header">
+                    <div><h2>Riyaz</h2><p><?= count($items) ?> records</p></div>
+                    <div class="content-header-actions">
+                        
+                    <button type="button" class="primary-button" data-modal-open="#riyazModal">Add Riyaz record</button>
+                    </div>
+                </div>
                 <?php if ($notice !== null): ?><p class="form-success" role="status"><?= $e($notice) ?></p><?php endif; ?>
-                <div class="content-management-grid">
-                    <section class="panel content-form-panel">
-                        <div class="panel-header">
-                            <h2><?= $editing ? 'Edit Riyaz record' : 'New Riyaz record' ?></h2>
-                            <?php if ($editing): ?><a class="panel-link" href="<?= $e($riyazUrl) ?>">Cancel</a><?php endif; ?>
-                        </div>
-                        <form method="POST" action="<?= $e($riyazUrl) ?><?= $editing ? '/' . (int) $editingRiyaz['id'] . '/update' : '' ?>" class="user-form content-form" enctype="multipart/form-data">
+
+                <section class="panel content-pages-panel">
+                    <div class="panel-header"><div><h2>All Riyaz records</h2><p>Records are linked to library media.</p></div></div>
+                    <div class="table-wrap">
+                        <table class="data-table content-table">
+                            <thead><tr><th>Media</th><th>Synced JSON</th><th>Updated by</th><th>Added</th><th>Updated</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
+                            <tbody>
+                            <?php if ($items === []): ?>
+                                <tr><td colspan="6" class="empty-state">No Riyaz records found.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($items as $item): ?>
+                                    <tr>
+                                        <td><?= $e($item['media_title']) ?><br><small>ID: <?= (int) $item['media_id'] ?></small></td>
+                                        <td><a href="<?= $e($baseUrl . '/' . $item['synced_json']) ?>" target="_blank" rel="noopener noreferrer"><?= $e(basename((string) $item['synced_json'])) ?></a></td>
+                                        <td><?= $e($item['updated_by_name'] ?? '') ?></td>
+                                        <td><?= $e(date('M j, Y', strtotime((string) $item['added_date_time']))) ?></td>
+                                        <td><?= $e(date('M j, Y', strtotime((string) $item['updated_date_time']))) ?></td>
+                                        <td class="user-actions content-actions">
+                                            <a class="text-action" href="<?= $e($riyazUrl) ?>?edit=<?= (int) $item['id'] ?>">Edit</a>
+                                            <form method="POST" action="<?= $e($riyazUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this Riyaz record?">
+                                                <?= $csrfField ?>
+                                                <button type="submit" class="text-action is-danger">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <?php ob_start(); ?>
+                    <?php if ($error !== null): ?><p class="form-error" role="alert"><?= $e($error) ?></p><?php endif; ?>
+                    <form method="POST" action="<?= $e($riyazUrl) ?><?= $editing ? '/' . (int) $editingRiyaz['id'] . '/update' : '' ?>" class="user-form content-form" enctype="multipart/form-data">
                             <?= $csrfField ?>
                             <label for="media_id">Library media</label>
                             <select id="media_id" name="media_id" required>
@@ -61,42 +94,17 @@ $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_Q
                             <?php endif; ?>
 
                             <button type="submit" class="primary-button"><?= $editing ? 'Save changes' : 'Add Riyaz record' ?></button>
-                        </form>
-                    </section>
-                    <section class="panel content-pages-panel">
-                        <div class="panel-header"><div><h2>All Riyaz records</h2><p>Records are linked to library media.</p></div></div>
-                        <div class="table-wrap">
-                            <table class="data-table content-table">
-                                <thead><tr><th>Media</th><th>Synced JSON</th><th>Updated by</th><th>Added</th><th>Updated</th><th><span class="visually-hidden">Actions</span></th></tr></thead>
-                                <tbody>
-                                <?php if ($items === []): ?>
-                                    <tr><td colspan="6" class="empty-state">No Riyaz records found.</td></tr>
-                                <?php else: ?>
-                                    <?php foreach ($items as $item): ?>
-                                        <tr>
-                                            <td><?= $e($item['media_title']) ?><br><small>ID: <?= (int) $item['media_id'] ?></small></td>
-                                            <td><a href="<?= $e($baseUrl . '/' . $item['synced_json']) ?>" target="_blank" rel="noopener noreferrer"><?= $e(basename((string) $item['synced_json'])) ?></a></td>
-                                            <td><?= $e($item['updated_by_name'] ?? '') ?></td>
-                                            <td><?= $e(date('M j, Y', strtotime((string) $item['added_date_time']))) ?></td>
-                                            <td><?= $e(date('M j, Y', strtotime((string) $item['updated_date_time']))) ?></td>
-                                            <td class="user-actions content-actions">
-                                                <a class="text-action" href="<?= $e($riyazUrl) ?>?edit=<?= (int) $item['id'] ?>">Edit</a>
-                                                <form method="POST" action="<?= $e($riyazUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this Riyaz record?">
-                                                    <?= $csrfField ?>
-                                                    <button type="submit" class="text-action is-danger">Delete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                </div>
+                    </form>
+                <?php
+                    $modalContent = (string) ob_get_clean();
+                    $modalId = 'riyazModal';
+                    $modalTitle = $editing ? 'Edit Riyaz record' : 'New Riyaz record';
+                    $modalOpen = $editing || $error !== null;
+                    require dirname(__DIR__) . '/partials/modal.php';
+                ?>
             </main>
         </div>
     </div>
-    <script src="<?= $e($baseUrl) ?>/assets/js/dashboard.js"></script>
+    <script src="<?= $e($baseUrl) ?>/assets/js/dashboard.js?v=riyaz-modal-1"></script>
 </body>
 </html>
