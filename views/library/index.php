@@ -168,13 +168,16 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
                             <label for="description">Description</label>
                             <textarea id="description" name="description" rows="5"><?= $e($formValues['description'] ?? '') ?></textarea>
 
-                            <label for="category_slugs">Categories</label>
+                            <label for="category_slugs">Categories and subcategories</label>
                             <select id="category_slugs" name="category_slugs[]" multiple>
                                 <?php foreach ($categories as $category): ?>
-                                    <option value="<?= $e($category['slug']) ?>"<?= in_array($category['slug'], $selectedCategorySlugs, true) ? ' selected' : '' ?>><?= $e($category['category_name']) ?></option>
+                                    <?php $categoryLabel = !empty($category['parent_name'])
+                                        ? $category['parent_name'] . ' / ' . $category['category_name']
+                                        : $category['category_name']; ?>
+                                    <option value="<?= $e($category['slug']) ?>"<?= in_array($category['slug'], $selectedCategorySlugs, true) ? ' selected' : '' ?>><?= $e($categoryLabel) ?></option>
                                 <?php endforeach; ?>
                             </select>
-                            <p class="field-hint">Use Ctrl or Command to select multiple categories. <a href="<?= $e($baseUrl) ?>/media-categories">Manage categories</a>.</p>
+                            <p class="field-hint">Parent and child categories are selectable. Use Ctrl or Command to select multiple. <a href="<?= $e($baseUrl) ?>/media-categories">Manage categories</a>.</p>
 
                             <label for="status">Status</label>
                             <select id="status" name="status" required>
