@@ -135,6 +135,21 @@ class Library extends Model
         return array_column($statement->fetchAll(), 'category_slug');
     }
 
+    public function updateCategoryMappings(string $mediaSlug, array $categorySlugs, int $updatedBy): void
+    {
+        $connection = $this->db->connection();
+        $connection->beginTransaction();
+        try {
+            $this->syncCategoryMappings($connection, $mediaSlug, $categorySlugs, $updatedBy);
+            $connection->commit();
+        } catch (\Throwable $error) {
+            if ($connection->inTransaction()) {
+                $connection->rollBack();
+            }
+            throw $error;
+        }
+    }
+
     public function activeForCategory(string $categorySlug): array
     {
         $statement = $this->db->connection()->prepare(

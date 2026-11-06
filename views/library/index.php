@@ -9,6 +9,60 @@ $formMediaType = (string) ($formValues['media_type'] ?? 'audio');
 $selectedCategorySlugs = is_array($selectedCategorySlugs ?? null) ? $selectedCategorySlugs : [];
 $e = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,video/mp4,video/quicktime';
+$categoriesByParent = [];
+$rootCategories = [];
+$categoryIds = array_fill_keys(array_map(
+    static fn (array $category): string => (string) $category['category_id'],
+    $categories
+), true);
+foreach ($categories as $category) {
+    if ($category['parent_id'] === null || !isset($categoryIds[(string) $category['parent_id']])) {
+        $rootCategories[] = $category;
+    } else {
+        $categoriesByParent[(string) $category['parent_id']][] = $category;
+    }
+}
+$hasSelectedCategory = static function (array $category) use (
+    &$hasSelectedCategory,
+    $categoriesByParent,
+    $selectedMappingCategorySlugs
+): bool {
+    if (in_array($category['slug'], $selectedMappingCategorySlugs, true)) {
+        return true;
+    }
+    foreach ($categoriesByParent[(string) $category['category_id']] ?? [] as $child) {
+        if ($hasSelectedCategory($child)) {
+            return true;
+        }
+    }
+
+    return false;
+};
+$renderCategoryChildren = static function (array $category, int $depth = 0) use (
+    &$renderCategoryChildren,
+    $categoriesByParent,
+    $selectedMappingCategorySlugs,
+    $hasSelectedCategory,
+    $e
+): void {
+    $children = $categoriesByParent[(string) $category['category_id']] ?? [];
+    if ($depth === 0 || $children !== []) {
+        echo '<details class="category-accordion' . ($depth === 0 ? ' category-accordion-root' : '') . '"'
+            . ($hasSelectedCategory($category) ? ' open' : '') . '>';
+        echo '<summary>' . $e($category['category_name']) . '</summary>';
+        echo '<div class="category-accordion-content">';
+    }
+    echo '<label class="category-checkbox"><input type="checkbox" name="category_slugs[]" value="'
+        . $e($category['slug']) . '"'
+        . (in_array($category['slug'], $selectedMappingCategorySlugs, true) ? ' checked' : '')
+        . '> <span>' . $e($category['category_name']) . '</span></label>';
+    foreach ($children as $child) {
+        $renderCategoryChildren($child, $depth + 1);
+    }
+    if ($depth === 0 || $children !== []) {
+        echo '</div></details>';
+    }
+};
 ?>
 <!doctype html>
 <html lang="en">
@@ -107,6 +161,7 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
                                             <td class="content-date"><?= $e(date('M j, Y', strtotime((string) $item['modified_at']))) ?></td>
                                             <td class="user-actions content-actions">
                                                 <a class="text-action" href="<?= $e($libraryUrl) ?>?edit=<?= (int) $item['id'] ?>">Edit</a>
+                                                <a class="text-action" href="<?= $e($libraryUrl) ?>?category-mapping=<?= (int) $item['id'] ?>">Category mapping</a>
                                                 <form method="POST" action="<?= $e($libraryUrl) ?>/<?= (int) $item['id'] ?>/delete" data-confirm="Delete this library item permanently?">
                                                     <?= $csrfField ?>
                                                     <button type="submit" class="text-action is-danger">Delete</button>
@@ -119,6 +174,28 @@ $mediaAccept = '.mp3,.mp4,.wav,.mov,.m4v,.m4a,audio/mpeg,audio/wav,audio/mp4,vid
                         </table>
                     </div>
                 </section>
+
+                <?php ob_start(); ?>
+                    <?php if ($mappingError !== null): ?>
+                        <p class="form-error" role="alert"><?= $e($mappingError) ?></p>
+                    <?php endif; ?>
+                    <p class="field-hint">Choose the categories and child categories to map to <strong><?= $e($mappingItem['title'] ?? '') ?></strong>.</p>
+                    <form method="POST" action="<?= $e($libraryUrl) ?>/<?= (int) ($mappingItem['id'] ?? 0) ?>/category-mapping" class="user-form content-form">
+                        <?= $csrfField ?>
+                        <div class="category-accordion-list">
+                            <?php foreach ($rootCategories as $category): ?>
+                                <?php $renderCategoryChildren($category); ?>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="submit" class="primary-button">Save category mapping</button>
+                    </form>
+                <?php
+                    $modalContent = (string) ob_get_clean();
+                    $modalId = 'libraryCategoryMappingModal';
+                    $modalTitle = 'Category mapping';
+                    $modalOpen = is_array($mappingItem) || $mappingError !== null;
+                    require dirname(__DIR__) . '/partials/modal.php';
+                ?>
 
                 <?php ob_start(); ?>
                     <?php if ($error !== null): ?>

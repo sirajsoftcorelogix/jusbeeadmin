@@ -50,6 +50,7 @@ $router->post('/content-categories/{id}/delete', [ContentCategoryController::cla
 $router->get('/library', [LibraryController::class, 'index'])->middleware([AuthMiddleware::class, AdminMiddleware::class]);
 $router->post('/library', [LibraryController::class, 'store'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
 $router->post('/library/{id}/update', [LibraryController::class, 'update'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
+$router->post('/library/{id}/category-mapping', [LibraryController::class, 'updateCategoryMapping'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
 $router->post('/library/{id}/delete', [LibraryController::class, 'destroy'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);
 $router->get('/media-categories', [MediaCategoryController::class, 'index'])->middleware([AuthMiddleware::class, AdminMiddleware::class]);
 $router->post('/media-categories', [MediaCategoryController::class, 'store'])->middleware([AuthMiddleware::class, AdminMiddleware::class, CsrfMiddleware::class]);

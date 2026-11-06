@@ -324,6 +324,48 @@ body.dashboard-screen {
     min-height: 120px;
 }
 
+.category-accordion-list {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0 0 1rem;
+}
+
+.category-accordion {
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fff;
+}
+
+.category-accordion > summary {
+    padding: 0.7rem 0.85rem;
+    color: var(--ink);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.category-accordion-content {
+    display: grid;
+    gap: 0.45rem;
+    padding: 0 0.85rem 0.8rem 1rem;
+}
+
+.category-accordion:not(.category-accordion-root) {
+    margin-left: 0.8rem;
+}
+
+.category-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+.category-checkbox input {
+    width: auto;
+    margin-top: 0.2rem;
+}
+
 .content-form textarea {
     width: 100%;
     min-height: 220px;

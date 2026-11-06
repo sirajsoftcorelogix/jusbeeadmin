@@ -34,20 +34,73 @@ class LibraryController extends Controller
             }
         }
 
+        $mappingItem = null;
+        $mappingId = filter_var($request->query('category-mapping'), FILTER_VALIDATE_INT);
+        if ($mappingId !== false && $mappingId > 0) {
+            $mappingItem = $library->find($mappingId);
+            if ($mappingItem === null) {
+                throw new HttpException(404, 'Library item not found.');
+            }
+        }
+
         $notice = match ((string) $request->query('notice', '')) {
             'created' => 'Library item created.',
             'saved' => 'Library item updated.',
             'deleted' => 'Library item deleted.',
+            'categories-saved' => 'Category mapping updated.',
             default => null,
         };
 
         return $this->renderIndex($csrf, $library, $categories, [
             'editingItem' => $editingItem,
             'categorySlugs' => $editingItem !== null ? $library->categorySlugs((string) $editingItem['slug']) : [],
+            'mappingItem' => $mappingItem,
+            'mappingCategorySlugs' => $mappingItem !== null
+                ? $library->categorySlugs((string) $mappingItem['slug'])
+                : [],
             'search' => $search,
             'status' => $status,
             'notice' => $notice,
         ]);
+    }
+
+    public function updateCategoryMapping(
+        string $id,
+        Request $request,
+        Csrf $csrf,
+        Library $library,
+        MediaCategory $categories,
+        Session $session
+    ): Response {
+        $itemId = $this->itemId($id);
+        $item = $library->find($itemId);
+        if ($item === null) {
+            throw new HttpException(404, 'Library item not found.');
+        }
+
+        $categorySlugs = $request->input('category_slugs', []);
+        if (
+            !is_array($categorySlugs)
+            || count($categorySlugs) !== count(array_filter(
+                $categorySlugs,
+                static fn (mixed $slug): bool => is_string($slug) && $slug !== ''
+            ))
+            || !$categories->slugsExist($categorySlugs)
+        ) {
+            return $this->renderIndex($csrf, $library, $categories, [
+                'mappingItem' => $item,
+                'mappingCategorySlugs' => is_array($categorySlugs) ? $categorySlugs : [],
+                'mappingError' => 'Select only valid categories.',
+            ]);
+        }
+
+        $library->updateCategoryMappings(
+            (string) $item['slug'],
+            array_values(array_unique($categorySlugs)),
+            (int) $session->get('admin_id')
+        );
+
+        return $this->redirect($this->libraryUrl() . '?notice=categories-saved');
     }
 
     public function store(
@@ -366,6 +419,11 @@ class LibraryController extends Controller
             'selectedCategorySlugs' => is_array($options['categorySlugs'] ?? ($options['old']['category_slugs'] ?? []))
                 ? ($options['categorySlugs'] ?? ($options['old']['category_slugs'] ?? []))
                 : [],
+            'mappingItem' => $options['mappingItem'] ?? null,
+            'selectedMappingCategorySlugs' => is_array($options['mappingCategorySlugs'] ?? [])
+                ? $options['mappingCategorySlugs']
+                : [],
+            'mappingError' => $options['mappingError'] ?? null,
             'error' => $options['error'] ?? null,
             'notice' => $options['notice'] ?? null,
             'old' => $options['old'] ?? [],
